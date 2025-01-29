@@ -23,6 +23,7 @@ type UsablePreset = {
 	busy: Ref<boolean>;
 	clearLocalSave: () => void;
 	localPreset: Ref<Partial<Preset>>;
+	clearPreset: ()	=> void;
 };
 
 export function usePreset(
@@ -170,6 +171,7 @@ export function usePreset(
 		busy,
 		clearLocalSave,
 		localPreset,
+		clearPreset
 	};
 
 	/**
@@ -227,5 +229,12 @@ export function usePreset(
 		data.user = (userStore.currentUser as User).id;
 
 		return await savePreset(data);
+	}
+
+	async function clearPreset() {
+		if(localPreset.value.id != undefined) {
+			await presetsStore.delete([localPreset.value.id]);
+		}
+		initLocalPreset();
 	}
 }

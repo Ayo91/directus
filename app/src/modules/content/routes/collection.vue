@@ -63,6 +63,7 @@ const {
 	refreshInterval,
 	busy: bookmarkSaving,
 	clearLocalSave,
+	clearPreset
 } = usePreset(collection, bookmarkID);
 
 const { layoutWrapper } = useLayout(layout);
@@ -352,6 +353,15 @@ function clearFilters() {
 							<v-icon class="toggle" name="bookmark" clickable @click="on" />
 						</template>
 					</bookmark-add>
+
+					<v-icon
+						v-if="!bookmark"
+						v-tooltip.bottom="t('reset_to_default')"
+						name="settings_backup_restore"
+						clickable
+						class="clear"
+						@click="clearPreset"
+					/>
 
 					<v-icon
 						v-if="bookmark && !bookmarkSaving && bookmarkSaved === false"
