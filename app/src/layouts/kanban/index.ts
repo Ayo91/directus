@@ -19,6 +19,7 @@ import KanbanActions from './actions.vue';
 import KanbanLayout from './kanban.vue';
 import KanbanOptions from './options.vue';
 import type { ChangeEvent, Group, Item, LayoutOptions, LayoutQuery } from './types';
+import { unexpectedError } from '@/utils/unexpected-error';
 
 export default defineLayout<LayoutOptions, LayoutQuery>({
 	id: 'kanban',
@@ -236,6 +237,8 @@ export default defineLayout<LayoutOptions, LayoutQuery>({
 			});
 		});
 
+		const isFiltered = computed(() => !!props.filterUser || !!props.search);
+
 		const { canReorderGroups, canReorderItems, canUpdateGroupTitle, canDeleteGroups } = useLayoutPermissions();
 
 		return {
@@ -262,6 +265,7 @@ export default defineLayout<LayoutOptions, LayoutQuery>({
 			itemCount,
 			totalCount,
 			showingCount,
+			isFiltered,
 			fieldsInCollection,
 			fields,
 			limit,
@@ -579,9 +583,13 @@ export default defineLayout<LayoutOptions, LayoutQuery>({
 						},
 					);
 
-					await fieldsStore.updateField(selectedGroup.value.collection, selectedGroup.value.field, {
-						meta: { options: { choices: updatedChoices } },
-					});
+					try {
+						await fieldsStore.updateField(selectedGroup.value.collection, selectedGroup.value.field, {
+							meta: { options: { choices: updatedChoices } },
+						});
+					} catch (error) {
+						unexpectedError(error);
+					}
 				}
 
 				await getGroups();
@@ -613,9 +621,13 @@ export default defineLayout<LayoutOptions, LayoutQuery>({
 						targetIndex,
 					);
 
-					await fieldsStore.updateField(selectedGroup.value.collection, selectedGroup.value.field, {
-						meta: { options: { choices: newSortedChoices } },
-					});
+					try {
+						await fieldsStore.updateField(selectedGroup.value.collection, selectedGroup.value.field, {
+							meta: { options: { choices: newSortedChoices } },
+						});
+					} catch (error) {
+						unexpectedError(error);
+					}
 				}
 			}
 		}
